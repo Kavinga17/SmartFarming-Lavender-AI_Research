@@ -204,23 +204,6 @@ python lavender_ai.py test_image.jpg
 
 ---
 
-## 📂 Project Files
-
-<div align="center">
-
-| File | Purpose |
-|------|---------|
-| `lavender_ai.py` | Python CNN model for image classification |
-| `decisionEngine.js` | Intelligent cross-verification logic |
-| `analysis.js` | Main API endpoint for plant analysis |
-| `dashboard_screen.dart` | Flutter main dashboard interface |
-| `diagnostic_screen.dart` | Detailed diagnostic report screen |
-| `api_service.dart` | REST API communication service |
-
-</div>
-
----
-
 ## 🏆 Technical Achievements
 
 <div align="center">
