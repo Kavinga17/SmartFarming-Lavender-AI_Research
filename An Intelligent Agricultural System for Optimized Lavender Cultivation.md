@@ -20,36 +20,6 @@ The system addresses critical challenges in lavender farming by providing real-t
 
 ---
 
-## 🎯 System Overview
-
-Our integrated system combines four specialized components working in harmony to optimize every aspect of lavender cultivation:
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    SmartFarming-Lavender-AI System                      │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                           │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐         │
-│  │   🌍 Soil &     │  │  🌡️ Climate     │  │  🐛 Pest &      │         │
-│  │   Irrigation    │  │   Control       │  │   Disease       │         │
-│  │   Monitoring    │  │   System        │  │   Detection     │         │
-│  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘         │
-│           │                    │                     │                  │
-│           └────────────────────┼─────────────────────┘                  │
-│                                │                                        │
-│                         ┌──────▼──────┐                                 │
-│                         │  Central    │                                 │
-│                         │  Control    │                                 │
-│                         │  Hub        │                                 │
-│                         └──────┬──────┘                                 │
-│                                │                                        │
-│                         ┌──────▼──────┐                                 │
-│                         │   💡 Smart  │                                 │
-│                         │   Lighting  │                                 │
-│                         │   System    │                                 │
-│                         └─────────────┘                                 │
-│                                                                           │
-└─────────────────────────────────────────────────────────────────────────┘
-```
 
 ---
 
@@ -106,10 +76,10 @@ Our integrated system combines four specialized components working in harmony to
 
 | Team Member | Student ID | Component | Focus Area |
 |:------------|:-----------|:----------|:-----------|
-| **Fernando J.L.S.T.** | IT22XXXXXX | 🌍 Soil & Irrigation System | Water & Nutrient Management |
-| **Rubasinghe K.P** | IT22XXXXXX | 🌡️ Climate Control System | Temperature & Humidity Control |
+| **Fernando J.L.S.T.** | IT22341440 | 🌍 Soil & Irrigation System | Water & Nutrient Management |
+| **Rubasinghe K.P** | IT22894588  | 🌡️ Climate Control System | Temperature & Humidity Control |
 | **WBWMRK Aluvihare** | IT22304506 | 🐛 Pest & Disease Monitoring | AI Detection & Real-time Alerts |
-| **Ekanayake S.K** | IT22XXXXXX | 💡 Smart Lighting System | Growth & Oil Production Optimization |
+| **Ekanayake S.K** | IT22197450  | 💡 Smart Lighting System | Growth & Oil Production Optimization |
 
 </div>
 
