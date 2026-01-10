@@ -211,7 +211,7 @@ pip install -r requirements.txt
 ## 🎓 Academic Context
 
 **Institution:** SLIIT  
-**Program:** Bachelor of Science in Information Technology  
+**Program:** Bachelor of Science Hons in Information Technology  
 **Project Type:** Final Year Research Project  
 **Supervisor:** Mr Deemantha Siriwardana
 
