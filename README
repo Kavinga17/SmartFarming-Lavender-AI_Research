@@ -1,16 +1,13 @@
-SmartFarming-Lavender-AI 🌱💜
-This project is an AI-Powered Smart Farming System designed to optimize lavender cultivation.
-It integrates IoT sensors, AI models, and smart devices to improve soil health, control climate, detect pests, and enhance essential oil yield.
+<div align="center">
+Developer: J.L.S.T. Fernando
+Component: AI-Powered Soil Health and Irrigation Management System
+Project: SmartFarming-Lavender-AI 🌱💜
 
-Key Features
-🌍 Real-time Soil Monitoring & Adaptive Irrigation – ensures optimal water and nutrient balance.
-🌡️ Intelligent Climate Control – adjusts greenhouse temperature and humidity dynamically.
-🐛 AI-powered Pest & Disease Detection – identifies threats early and applies eco-friendly pest control.
-💡 Smart Lighting System – optimizes light spectrum and intensity for better growth and oil production.
-Team
-Fernando J.L.S.T. – Soil & Irrigation System
-Rubasinghe K.P – Climate Control System
-WBWMRK Aluvihare – Pest & Disease Monitoring
-Ekanayake S.K – Smart Lighting System
-🚀 This repository will contain the code, datasets, and documentation for our final-year research project.
+https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white
+https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
+https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white
+https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
 
+Status: 🚀 Fully Functional Backend + Frontend | 🔧 IoT Integration Pending
+
+</div>
