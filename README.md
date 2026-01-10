@@ -2,7 +2,7 @@ SmartFarming-Lavender-AI 🌱💜
 This project is an AI-Powered Smart Farming System designed to optimize lavender cultivation.
 It integrates IoT sensors, AI models, and smart devices to improve soil health, control climate, detect pests, and enhance essential oil yield.
 
-Key Features
+Key Featuresx
 🌍 Real-time Soil Monitoring & Adaptive Irrigation – ensures optimal water and nutrient balance.
 🌡️ Intelligent Climate Control – adjusts greenhouse temperature and humidity dynamically.
 🐛 AI-powered Pest & Disease Detection – identifies threats early and applies eco-friendly pest control.
