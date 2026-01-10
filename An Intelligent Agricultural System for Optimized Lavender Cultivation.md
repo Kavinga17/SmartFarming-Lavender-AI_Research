@@ -107,15 +107,15 @@ Each component has been developed as an independent module with detailed documen
                           │   - Analytics Engine    │
                           └───────────┬─────────────┘
                                       │
-                ┌─────────────────────┼─────────────────────┐
-                │                     │                     │
+                ┌─────────────────────┼───────────────────┐
+                │                     │                   │
         ┌───────▼────────┐   ┌────────▼───────┐   ┌───────▼────────┐
         │  Soil Sensors  │   │ Climate Sensors│   │  ESP32-CAM     │
-        │  - Moisture    │   │ - Temperature  │   │  - Pest Detection
-        │  - pH Level    │   │ - Humidity     │   │  - Disease ID  │
-        │  - Nutrients   │   │ - CO2 Level    │   │                │
+        │    Moisture    │   │   Temperature  │   │  Pest Detection|
+        │    pH Level    │   │   Humidity     │   │  Disease ID    │
+        │    Nutrients   │   │   CO2 Level    │   │                │
         └───────┬────────┘   └────────┬───────┘   └───────┬────────┘
-                │                     │                     │
+                │                     │                   │
         ┌───────▼────────┐   ┌────────▼───────┐   ┌───────▼────────┐
         │  Water Pump    │   │  HVAC System   │   │  Alert System  │
         │  Irrigation    │   │  Ventilation   │   │  Buzzer + LED  │
