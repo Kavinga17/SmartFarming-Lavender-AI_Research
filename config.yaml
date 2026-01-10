@@ -1,0 +1,8 @@
+path: C:\Users\Desktop\lavenderGAME\lavender_dataset\MassMINDDS\YoloTest\Dataset
+train: images
+val: images   
+
+names:
+  0: Lavender_Disease
+  1: Lavender_Healthy
+  2: Insect
