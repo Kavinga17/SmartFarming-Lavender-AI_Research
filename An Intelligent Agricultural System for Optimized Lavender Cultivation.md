@@ -6,7 +6,6 @@
 
 ![Status](https://img.shields.io/badge/Status-In_Development-yellow?style=flat-square)
 ![Research](https://img.shields.io/badge/Type-Final_Year_Project-blue?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 </div>
 
