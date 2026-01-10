@@ -110,7 +110,7 @@ REST API, JSON
  Backend Setup (Node.js)
 ```bash
 # Clone backend repository
-git clone https://github.com/yourusername/lavender_backend.git
+git clone ...
 cd lavender_backend
 
 # Install dependencies
@@ -127,7 +127,7 @@ npm start
  Frontend Setup (Flutter)
 ```bash
 # Clone frontend repository
-git clone https://github.com/yourusername/lavender_ai_app.git
+git clone ...
 cd lavender_ai_app
 
 # Install dependencies
@@ -175,19 +175,6 @@ python lavender_ai.py test_image.jpg
 | 📊 Data-Driven Decisions | Historical trends inform future care strategies |
 | 💰 Cost-effective | Low-cost sensors + open-source software stack |
 | 📈 Scalable | Deploy across multiple fields/locations |
-
----
-
- 📂 Project Files
-
-| File | Purpose |
-|------|---------|
-| `lavender_ai.py` | Python CNN model for image classification |
-| `decisionEngine.js` | Intelligent cross-verification logic |
-| `analysis.js` | Main API endpoint for plant analysis |
-| `dashboard_screen.dart` | Flutter main dashboard interface |
-| `diagnostic_screen.dart` | Detailed diagnostic report screen |
-| `api_service.dart` | REST API communication service |
 
 ---
 
