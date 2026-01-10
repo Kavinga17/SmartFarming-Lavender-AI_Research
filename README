@@ -1,16 +1,118 @@
-SmartFarming-Lavender-AI 🌱💜
-This project is an Smart Farming System designed to optimize lavender cultivation.
-It integrates IoT sensors,models, and smart devices to improve soil health, control climate, detect pests, and enhance essential oil yield.
+# 🌱 SmartFarming-Lavender-AI 💜
 
-Key Features
-🌍 Real-time Soil Monitoring & Adaptive Irrigation – ensures optimal water and nutrient balance.
-🌡️ Intelligent Climate Control – adjusts greenhouse temperature and humidity dynamically.
-🐛 Pest & Disease Detection – identifies threats early and applies eco-friendly pest control.
-💡 Smart Lighting System – optimizes light spectrum and intensity for better growth and oil production.
-Team
-Fernando J.L.S.T. – Soil & Irrigation System
-Rubasinghe K.P – Climate Control System
-WBWMRK Aluvihare – Pest & Disease Monitoring
-Ekanayake S.K – Smart Lighting System
-🚀 This repository will contain the code, datasets, and documentation for our final-year research project.
+<div align="center">
 
+**An Intelligent Agricultural System for Optimized Lavender Cultivation**
+
+![Status](https://img.shields.io/badge/Status-In_Development-yellow?style=flat-square)
+![Research](https://img.shields.io/badge/Type-Final_Year_Project-blue?style=flat-square)
+
+</div>
+
+---
+
+## 📋 About The Project
+
+SmartFarming-Lavender-AI is an intelligent farming system that integrates **IoT sensors**, **AI models**, and **smart devices** to optimize lavender cultivation. The system monitors soil health, controls climate, detects pests, and enhances essential oil yield.
+
+---
+
+## ✨ Key Features
+
+- 🌍 **Real-time Soil Monitoring & Adaptive Irrigation** - Optimal water and nutrient balance
+- 🌡️ **Intelligent Climate Control** - Dynamic temperature and humidity adjustment
+- 🐛 **Pest & Disease Detection** - Early threat identification with eco-friendly control
+- 💡 **Smart Lighting System** - Optimized light spectrum for better growth and oil production
+
+---
+
+## 👥 Team
+
+| Member | Component |
+|--------|-----------|
+| **Fernando J.L.S.T.** | Soil & Irrigation System |
+| **Rubasinghe K.P** | Climate Control System |
+| **WBWMRK Aluvihare** | Pest & Disease Monitoring |
+| **Ekanayake S.K** | Smart Lighting System |
+
+---
+
+## 🐛 Pest & Disease Monitoring System
+
+<div align="center">
+
+**Developer:** WBWMRK Aluvihare  
+**Role:** Pest & Disease Detection and Real-time Monitoring
+
+</div>
+
+### Overview
+AI-powered detection system using **YOLOv8** and **ESP32-CAM** for real-time monitoring of lavender health, detecting diseases and pest infestations with automatic alerts.
+
+### What It Does
+- 📹 **Live Detection** - Continuous monitoring via ESP32-CAM (320x240 @ 10 FPS)
+- 🎯 **3 Detection Classes** - Disease, Healthy plants, and Insects
+- 🔔 **Automatic Alerts** - Buzzer sound + LED flash when pests detected
+- 💻 **Two Modes** - Static image analysis and real-time streaming
+
+### Technology Stack
+```
+Hardware: ESP32-CAM, Buzzer, LED
+Software: Python, YOLOv8, OpenCV, NumPy
+Communication: WiFi streaming (Port 81) + UDP control (Port 82)
+```
+
+### How It Works
+```
+ESP32-CAM → WiFi Stream → YOLOv8 Detection → Alert System → Farmer Notification
+```
+
+### Training Details
+- **Model:** YOLOv8m (Medium)
+- **Epochs:** 50
+- **Image Size:** 960x960 (training), 320x240 (live detection)
+- **Classes:** Lavender_Disease, Lavender_Healthy, Insect
+
+### Key Features
+✅ Real-time detection with 10-frame stability buffer  
+✅ Confidence threshold: 0.20-0.25  
+✅ Auto-reconnection on network failure  
+✅ Interactive controls (adjust threshold, manual LED toggle)  
+✅ Cost-effective using ESP32-CAM ($5 hardware)
+
+### Installation
+```bash
+# Python dependencies
+pip install ultralytics opencv-python numpy
+
+# Run detection
+python Insect_live.py          # Live monitoring
+python Detect_Lavender.py      # Static images
+python Model_Train.py          # Train custom model
+```
+
+---
+
+## 📂 Repository Structure
+```
+├── pest_detection/       # Pest detection scripts
+├── datasets/             # Training data
+├── models/               # Trained models
+└── docs/                 # Documentation
+```
+
+---
+
+## 🎓 Project Status
+
+This is a **Final Year Research Project** demonstrating how AI and IoT can transform traditional agriculture into smart, sustainable farming.
+
+---
+
+<div align="center">
+
+**Made with 💜 by the SmartFarming-Lavender-AI Team**
+
+⭐ Star this repo if you find it useful!
+
+</div>
