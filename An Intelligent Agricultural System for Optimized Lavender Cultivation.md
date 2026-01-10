@@ -172,39 +172,6 @@ Farmer Interface (Dashboard/Notifications)
 
 ---
 
-## 📂 Repository Structure
-```
-SmartFarming-Lavender-AI/
-├── 📁 soil-irrigation/           # Soil & Water Management Component
-│   ├── sensors/                  # Sensor code and drivers
-│   ├── irrigation-control/       # Automated irrigation system
-│   └── README.md                 # Component documentation
-│
-├── 📁 climate-control/           # Climate Management Component
-│   ├── temperature-control/      # Temperature regulation
-│   ├── humidity-control/         # Humidity management
-│   └── README.md                 # Component documentation
-│
-├── 📁 pest-detection/            # Pest & Disease Monitoring Component
-│   ├── Detect_Lavender.py       # Static image detection
-│   ├── Insect_live.py           # Real-time monitoring
-│   ├── Model_Train.py           # Training script
-│   ├── Iot_ChipCode.txt         # ESP32-CAM firmware
-│   └── README.md                # Component documentation
-│
-├── 📁 smart-lighting/            # Intelligent Lighting Component
-│   ├── spectrum-control/         # Light spectrum optimization
-│   ├── intensity-control/        # Light intensity management
-│   └── README.md                 # Component documentation
-│
-├── 📁 datasets/                  # Training datasets for all models
-├── 📁 models/                    # Trained AI/ML models
-├── 📁 docs/                      # Project documentation
-├── 📁 dashboard/                 # Web/Mobile dashboard code
-└── README.md                     # This file
-```
-
----
 
 ## 🚀 Getting Started
 
@@ -244,32 +211,10 @@ pip install -r requirements.txt
 
 ## 🎓 Academic Context
 
-**Institution:** [Your University Name]  
+**Institution:** SLIIT  
 **Program:** Bachelor of Science in Information Technology  
 **Project Type:** Final Year Research Project  
-**Duration:** [Start Date] - [End Date]  
-**Supervisor:** [Supervisor Name]
-
----
-
-## 📄 Research Papers & Documentation
-
-- [Project Proposal](./docs/proposal.pdf)
-- [Literature Review](./docs/literature-review.pdf)
-- [System Design Document](./docs/system-design.pdf)
-- [Final Research Paper](./docs/final-paper.pdf) *(Coming Soon)*
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**Supervisor:** Mr Deemantha Siriwardana
 
 ---
 
@@ -287,9 +232,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions, collaboration, or feedback:
 
-📧 Email: smartfarming.lavender@university.edu  
-🌐 Website: [Coming Soon]  
-📱 Follow us: [@SmartFarmingAI](https://twitter.com/smartfarmingai)
+📧 Email: kavingaaluwihare2001@gmail.com
+
 
 ---
 
