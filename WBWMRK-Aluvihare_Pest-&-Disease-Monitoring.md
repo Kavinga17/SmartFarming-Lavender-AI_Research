@@ -4,7 +4,7 @@
 
 <div align="center">
 
-**Developer:** WBWMRK Aluvihare  
+**Developer:** WBWMRK Aluvihare - IT22304506
 **Component:** Pest & Disease Detection and Real-time Monitoring System  
 **Project:** SmartFarming-Lavender-AI 🌱💜
 
