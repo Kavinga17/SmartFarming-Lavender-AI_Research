@@ -1,16 +1,4 @@
-<div align="center">
-  
-![Header](https://capsule-render.vercel.app/api?type=waving&color=gradient&height=200&section=header&text=Pest%20%26%20Disease%20Monitoring&fontSize=50&animation=fadeIn&fontAlignY=35)
 
-<img width="100%" height="50" src="https://i.imgur.com/dBaSKWF.gif" />
-
-# 🐛 Smart Lavender Protection System
-
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=9D4EDD&center=true&vCenter=true&width=435&lines=AI-Powered+Pest+Detection;Real-time+Monitoring+System;Protecting+Lavender+Farms+24%2F7)](https://git.io/typing-svg)
-
-</div>
-
----
 
 ## 👨‍💻 Developer Information
 
