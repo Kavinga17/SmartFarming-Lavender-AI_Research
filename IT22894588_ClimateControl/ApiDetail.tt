@@ -1,0 +1,623 @@
+================================================================================
+  🌱 GREENHOUSE CLIMATE CONTROL SYSTEM - API DOCUMENTATION
+  For Mobile App Integration
+  Version: 1.0.0
+  Last Updated: 2026-03-03
+================================================================================
+
+
+================================================================================
+  1. SERVER CONFIGURATION
+================================================================================
+
+  Base URL          : http://<SERVER_IP>:5000
+  Protocol          : HTTP
+  Content-Type      : application/json
+  Default Port      : 5000
+  Host Binding      : 0.0.0.0 (accessible over local network)
+  Framework         : Flask (Python)
+
+  Note: Replace <SERVER_IP> with the actual IP address of the server
+        running the Flask application (e.g., http://192.168.1.100:5000).
+
+
+================================================================================
+  2. API ENDPOINTS OVERVIEW
+================================================================================
+
+  +--------+------------+------------------------------------------+
+  | Method | Endpoint   | Description                              |
+  +--------+------------+------------------------------------------+
+  | GET    | /          | Root - API information & metadata        |
+  | GET    | /health    | Health check - server & model status     |
+  | POST   | /predict   | Predict fan speed & humidifier mode      |
+  +--------+------------+------------------------------------------+
+
+
+================================================================================
+  3. ENDPOINT DETAILS
+================================================================================
+
+
+--------------------------------------------------------------------------------
+  3.1  GET /  (Root / API Information)
+--------------------------------------------------------------------------------
+
+  Description : Returns general API information, version, and available
+                endpoints. Use this to verify the server is reachable.
+
+  Request:
+    Method    : GET
+    Headers   : None required
+    Body      : None
+
+  Response (200 OK):
+    {
+        "service": "Greenhouse Climate Control API",
+        "version": "1.0.0",
+        "endpoints": {
+            "POST /predict": "Predict fan speed and humidifier mode",
+            "GET /health": "Health check",
+            "GET /": "API information"
+        },
+        "required_fields": [
+            "air_temp",
+            "humidity",
+            "soil_temp",
+            "target_temp",
+            "target_humidity",
+            "prev_fan_speed",
+            "prev_humidifier_mode"
+        ]
+    }
+
+  Response Fields:
+    +------------------+---------+----------------------------------------------+
+    | Field            | Type    | Description                                  |
+    +------------------+---------+----------------------------------------------+
+    | service          | string  | Name of the API service                      |
+    | version          | string  | API version number                           |
+    | endpoints        | object  | Map of available endpoints & descriptions     |
+    | required_fields  | array   | List of required input field names for        |
+    |                  |         | the /predict endpoint                        |
+    +------------------+---------+----------------------------------------------+
+
+  Example (Mobile App - Dart/Flutter):
+    final response = await http.get(Uri.parse('$baseUrl/'));
+
+  Example (Mobile App - Kotlin/Android):
+    val response = URL("$baseUrl/").readText()
+
+
+--------------------------------------------------------------------------------
+  3.2  GET /health  (Health Check)
+--------------------------------------------------------------------------------
+
+  Description : Returns the health status of the server and whether
+                ML models are loaded and ready for predictions.
+
+  Request:
+    Method    : GET
+    Headers   : None required
+    Body      : None
+
+  Response (200 OK):
+    {
+        "status": "healthy",
+        "models_loaded": true
+    }
+
+  Response Fields:
+    +------------------+---------+----------------------------------------------+
+    | Field            | Type    | Description                                  |
+    +------------------+---------+----------------------------------------------+
+    | status           | string  | Server health status ("healthy")             |
+    | models_loaded    | boolean | true if all ML models (fan_model,            |
+    |                  |         | humidifier_model, scaler) are loaded         |
+    +------------------+---------+----------------------------------------------+
+
+  Usage in Mobile App:
+    - Call this endpoint on app startup to verify the server is reachable
+    - Periodically poll to check server connectivity
+    - Show a connection indicator (green/red) based on response
+
+  Example (Mobile App - Dart/Flutter):
+    final response = await http.get(Uri.parse('$baseUrl/health'));
+    final data = jsonDecode(response.body);
+    bool isConnected = data['models_loaded'] == true;
+
+  Example (Mobile App - Kotlin/Android):
+    val response = URL("$baseUrl/health").readText()
+    val json = JSONObject(response)
+    val isHealthy = json.getBoolean("models_loaded")
+
+
+--------------------------------------------------------------------------------
+  3.3  POST /predict  (Predict Fan Speed & Humidifier Mode)
+--------------------------------------------------------------------------------
+
+  Description : Accepts sensor readings and returns AI-predicted values
+                for fan speed and humidifier mode. This is the PRIMARY
+                endpoint for the mobile app.
+
+  Request:
+    Method       : POST
+    Content-Type : application/json
+    Headers      : Content-Type: application/json
+
+  Request Body (JSON):
+    {
+        "air_temp": 26.5,
+        "humidity": 75.0,
+        "soil_temp": 24.0,
+        "target_temp": 24.0,
+        "target_humidity": 65.0,
+        "prev_fan_speed": 50.0,
+        "prev_humidifier_mode": 1.0
+    }
+
+  Request Fields:
+    +------------------------+--------+----------+----------------------------+
+    | Field                  | Type   | Required | Description                |
+    +------------------------+--------+----------+----------------------------+
+    | air_temp               | float  | Yes      | Current air temperature    |
+    |                        |        |          | in °C (e.g., 26.5)        |
+    +------------------------+--------+----------+----------------------------+
+    | humidity               | float  | Yes      | Current humidity           |
+    |                        |        |          | percentage (e.g., 75.0)    |
+    +------------------------+--------+----------+----------------------------+
+    | soil_temp              | float  | Yes      | Current soil temperature   |
+    |                        |        |          | in °C (e.g., 24.0)        |
+    +------------------------+--------+----------+----------------------------+
+    | target_temp            | float  | Yes      | Desired target air         |
+    |                        |        |          | temperature in °C          |
+    +------------------------+--------+----------+----------------------------+
+    | target_humidity        | float  | Yes      | Desired target humidity    |
+    |                        |        |          | percentage                 |
+    +------------------------+--------+----------+----------------------------+
+    | prev_fan_speed         | float  | Yes      | Previous fan speed         |
+    |                        |        |          | setting (0 - 100)          |
+    +------------------------+--------+----------+----------------------------+
+    | prev_humidifier_mode   | float  | Yes      | Previous humidifier mode   |
+    |                        |        |          | (0=Off, 1=Low, 2=Medium,   |
+    |                        |        |          |  3=High)                   |
+    +------------------------+--------+----------+----------------------------+
+
+  Typical Value Ranges (from dataset):
+    +------------------------+----------+----------+
+    | Field                  | Min      | Max      |
+    +------------------------+----------+----------+
+    | air_temp               | ~20.0    | ~35.0    |
+    | humidity               | ~40.0    | ~100.0   |
+    | soil_temp              | ~18.0    | ~30.0    |
+    | target_temp            | 22 / 24 / 26 / 28   |
+    | target_humidity        | 55 / 60 / 65 / 70   |
+    | prev_fan_speed         | 0.0      | 100.0    |
+    | prev_humidifier_mode   | 0.0      | 3.0      |
+    +------------------------+----------+----------+
+
+
+  ── Success Response (200 OK) ──
+
+    {
+        "fan_speed": 70.25,
+        "humidifier_mode": 0
+    }
+
+  Response Fields:
+    +-------------------+--------+----------------------------------------------+
+    | Field             | Type   | Description                                  |
+    +-------------------+--------+----------------------------------------------+
+    | fan_speed         | float  | Predicted fan speed (0 - 100), rounded to    |
+    |                   |        | 2 decimal places. Higher value = faster fan.  |
+    +-------------------+--------+----------------------------------------------+
+    | humidifier_mode   | int    | Predicted humidifier mode:                   |
+    |                   |        |   0 = Off                                    |
+    |                   |        |   1 = Low                                    |
+    |                   |        |   2 = Medium                                 |
+    |                   |        |   3 = High                                   |
+    +-------------------+--------+----------------------------------------------+
+
+
+  ── Error Response: Missing JSON Body (400 Bad Request) ──
+
+    {
+        "error": "No JSON data provided"
+    }
+
+
+  ── Error Response: Missing Fields (400 Bad Request) ──
+
+    {
+        "error": "Missing required fields",
+        "missing": ["air_temp", "soil_temp"]
+    }
+
+
+  ── Error Response: Invalid Field Value (400 Bad Request) ──
+
+    {
+        "error": "Invalid field value: could not convert string to float: 'abc'"
+    }
+
+
+  ── Error Response: Server/Prediction Error (500 Internal Server Error) ──
+
+    {
+        "error": "Prediction failed: <error_message>"
+    }
+
+
+  Example (Mobile App - Dart/Flutter):
+    final response = await http.post(
+      Uri.parse('$baseUrl/predict'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'air_temp': 26.5,
+        'humidity': 75.0,
+        'soil_temp': 24.0,
+        'target_temp': 24.0,
+        'target_humidity': 65.0,
+        'prev_fan_speed': 50.0,
+        'prev_humidifier_mode': 1.0,
+      }),
+    );
+    final data = jsonDecode(response.body);
+    double fanSpeed = data['fan_speed'];
+    int humidifierMode = data['humidifier_mode'];
+
+  Example (Mobile App - Kotlin/Android):
+    val json = JSONObject().apply {
+        put("air_temp", 26.5)
+        put("humidity", 75.0)
+        put("soil_temp", 24.0)
+        put("target_temp", 24.0)
+        put("target_humidity", 65.0)
+        put("prev_fan_speed", 50.0)
+        put("prev_humidifier_mode", 1.0)
+    }
+    // Use OkHttp / Retrofit to POST json to "$baseUrl/predict"
+
+  Example (Mobile App - Swift/iOS):
+    let parameters: [String: Any] = [
+        "air_temp": 26.5,
+        "humidity": 75.0,
+        "soil_temp": 24.0,
+        "target_temp": 24.0,
+        "target_humidity": 65.0,
+        "prev_fan_speed": 50.0,
+        "prev_humidifier_mode": 1.0
+    ]
+    // Use URLSession to POST parameters to "\(baseUrl)/predict"
+
+
+================================================================================
+  4. DATA MODELS (For Mobile App)
+================================================================================
+
+
+  ── 4.1  SensorData (Request Model) ──
+
+    Used when sending data to POST /predict
+
+    {
+        "air_temp"               : float,   // Current air temperature (°C)
+        "humidity"               : float,   // Current humidity (%)
+        "soil_temp"              : float,   // Current soil temperature (°C)
+        "target_temp"            : float,   // Target air temperature (°C)
+        "target_humidity"        : float,   // Target humidity (%)
+        "prev_fan_speed"         : float,   // Previous fan speed (0-100)
+        "prev_humidifier_mode"   : float    // Previous humidifier mode (0-3)
+    }
+
+
+  ── 4.2  PredictionResult (Response Model) ──
+
+    Received from POST /predict
+
+    {
+        "fan_speed"          : float,   // Predicted fan speed (0-100)
+        "humidifier_mode"    : int      // Predicted mode (0=Off,1=Low,2=Med,3=High)
+    }
+
+
+  ── 4.3  HealthStatus (Response Model) ──
+
+    Received from GET /health
+
+    {
+        "status"         : string,   // "healthy"
+        "models_loaded"  : boolean   // true if models are ready
+    }
+
+
+  ── 4.4  ApiInfo (Response Model) ──
+
+    Received from GET /
+
+    {
+        "service"          : string,   // "Greenhouse Climate Control API"
+        "version"          : string,   // "1.0.0"
+        "endpoints"        : object,   // Available endpoint descriptions
+        "required_fields"  : array     // List of required field names
+    }
+
+
+  ── 4.5  ErrorResponse (Error Model) ──
+
+    Received on any error (400/500)
+
+    {
+        "error"    : string,   // Error message description
+        "missing"  : array     // (Optional) List of missing field names
+    }
+
+
+  ── 4.6  Humidifier Mode Enum ──
+
+    +-------+----------+---------------------------------------------------+
+    | Value | Label    | Description                                       |
+    +-------+----------+---------------------------------------------------+
+    |   0   | Off      | Humidifier is turned off                          |
+    |   1   | Low      | Humidifier running at low intensity               |
+    |   2   | Medium   | Humidifier running at medium intensity             |
+    |   3   | High     | Humidifier running at high intensity               |
+    +-------+----------+---------------------------------------------------+
+
+
+================================================================================
+  5. ML MODEL DETAILS (Reference)
+================================================================================
+
+  The API uses two pre-trained machine learning models:
+
+  ── 5.1  Fan Speed Model ──
+    Algorithm    : RandomForestRegressor (scikit-learn)
+    Task         : Regression (predicts continuous fan speed 0-100)
+    Output       : float (rounded to 2 decimal places)
+    Features     : 7 input features (see Section 3.3)
+    Scaler       : StandardScaler (fitted on training data)
+    File         : models/fan_model.pkl
+
+  ── 5.2  Humidifier Mode Model ──
+    Algorithm    : RandomForestClassifier (scikit-learn)
+    Task         : Classification (predicts mode 0, 1, 2, or 3)
+    Output       : int (0=Off, 1=Low, 2=Medium, 3=High)
+    Features     : 7 input features (see Section 3.3)
+    Scaler       : StandardScaler (same scaler as fan model)
+    File         : models/humidifier_model.pkl
+
+  ── 5.3  Feature Scaling ──
+    Scaler       : StandardScaler
+    File         : models/scaler.pkl
+    Applied to   : All 7 input features before prediction
+    Note         : Scaling is handled server-side; the mobile app
+                   sends raw sensor values (no pre-processing needed).
+
+
+================================================================================
+  6. INPUT FEATURES DESCRIPTION
+================================================================================
+
+  The following 7 features must be sent in the exact order below:
+
+  +-----+------------------------+--------+----------------------------------+
+  | #   | Feature Name           | Unit   | Description                      |
+  +-----+------------------------+--------+----------------------------------+
+  |  1  | air_temp               | °C     | Current air temperature reading  |
+  |     |                        |        | from the DHT/temperature sensor  |
+  +-----+------------------------+--------+----------------------------------+
+  |  2  | humidity               | %      | Current relative humidity from   |
+  |     |                        |        | the DHT/humidity sensor          |
+  +-----+------------------------+--------+----------------------------------+
+  |  3  | soil_temp              | °C     | Current soil temperature from    |
+  |     |                        |        | the soil temperature sensor      |
+  +-----+------------------------+--------+----------------------------------+
+  |  4  | target_temp            | °C     | User-defined target air          |
+  |     |                        |        | temperature for the greenhouse   |
+  +-----+------------------------+--------+----------------------------------+
+  |  5  | target_humidity        | %      | User-defined target humidity     |
+  |     |                        |        | for the greenhouse               |
+  +-----+------------------------+--------+----------------------------------+
+  |  6  | prev_fan_speed         | 0-100  | The fan speed that was set in    |
+  |     |                        |        | the previous control cycle       |
+  +-----+------------------------+--------+----------------------------------+
+  |  7  | prev_humidifier_mode   | 0-3    | The humidifier mode that was     |
+  |     |                        |        | set in the previous cycle        |
+  |     |                        |        | (0=Off, 1=Low, 2=Med, 3=High)   |
+  +-----+------------------------+--------+----------------------------------+
+
+
+================================================================================
+  7. ERROR HANDLING GUIDE (For Mobile App)
+================================================================================
+
+  HTTP Status Codes:
+    200  -  Success. Parse the JSON response body.
+    400  -  Bad Request. Check "error" field for details.
+             Possible causes:
+               - No JSON body sent
+               - Missing required fields
+               - Invalid field values (non-numeric)
+    500  -  Internal Server Error. Server-side issue.
+             Possible causes:
+               - Models not loaded
+               - Prediction computation error
+
+  Recommended Mobile App Error Handling:
+    1. Always check HTTP status code before parsing response
+    2. If status != 200, display the "error" message to the user
+    3. If "missing" array exists in error, highlight those fields
+    4. Implement timeout handling (recommended: 5-10 seconds)
+    5. Show connection error if server is unreachable
+    6. Retry logic: max 3 retries with exponential backoff
+
+  Example Error Handling (Dart/Flutter):
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      // Use data['fan_speed'] and data['humidifier_mode']
+    } else if (response.statusCode == 400) {
+      final error = jsonDecode(response.body);
+      showError(error['error']);
+    } else {
+      showError('Server error. Please try again.');
+    }
+
+
+================================================================================
+  8. MOBILE APP INTEGRATION WORKFLOW
+================================================================================
+
+  Recommended flow for the mobile application:
+
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  1. APP STARTUP                                                 │
+  │     └─> GET /health                                             │
+  │         └─> Check models_loaded == true                         │
+  │             ├─ true  → Show "Connected" indicator               │
+  │             └─ false → Show "Server not ready" warning          │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  2. USER SETS TARGET VALUES                                     │
+  │     └─> User enters target_temp and target_humidity             │
+  │         via sliders or input fields in the app                  │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  3. RECEIVE SENSOR DATA                                         │
+  │     └─> ESP32 sends real-time sensor readings                   │
+  │         (air_temp, humidity, soil_temp) via WiFi                │
+  │         OR user enters values manually                          │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  4. SEND PREDICTION REQUEST                                     │
+  │     └─> POST /predict                                           │
+  │         Body: {                                                 │
+  │           air_temp, humidity, soil_temp,                         │
+  │           target_temp, target_humidity,                          │
+  │           prev_fan_speed, prev_humidifier_mode                  │
+  │         }                                                       │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  5. DISPLAY RESULTS                                             │
+  │     └─> Parse response:                                         │
+  │         ├─ fan_speed      → Display on gauge/slider (0-100)     │
+  │         └─ humidifier_mode → Display as label:                  │
+  │              0 = "Off"                                          │
+  │              1 = "Low"                                          │
+  │              2 = "Medium"                                       │
+  │              3 = "High"                                         │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  6. SEND COMMANDS TO ESP32                                      │
+  │     └─> Forward predicted values to ESP32 device                │
+  │         to control the fan and humidifier hardware              │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  7. UPDATE PREVIOUS VALUES                                      │
+  │     └─> Store current fan_speed as prev_fan_speed               │
+  │         Store current humidifier_mode as prev_humidifier_mode   │
+  │         for the next prediction cycle                           │
+  └─────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+  9. SAMPLE TEST DATA
+================================================================================
+
+  ── Test Case 1: High Temperature, High Humidity ──
+    Request:
+      {
+          "air_temp": 28.5,
+          "humidity": 65.0,
+          "soil_temp": 22.0,
+          "target_temp": 25.0,
+          "target_humidity": 60.0,
+          "prev_fan_speed": 50.0,
+          "prev_humidifier_mode": 1.0
+      }
+    Expected: Higher fan_speed, humidifier_mode may vary
+
+  ── Test Case 2: Normal Conditions ──
+    Request:
+      {
+          "air_temp": 26.5,
+          "humidity": 75.0,
+          "soil_temp": 24.0,
+          "target_temp": 24.0,
+          "target_humidity": 65.0,
+          "prev_fan_speed": 50.0,
+          "prev_humidifier_mode": 1.0
+      }
+    Expected: Moderate fan_speed, humidifier_mode based on humidity gap
+
+  ── Test Case 3: Low Temperature, Low Humidity ──
+    Request:
+      {
+          "air_temp": 22.0,
+          "humidity": 45.0,
+          "soil_temp": 20.0,
+          "target_temp": 24.0,
+          "target_humidity": 65.0,
+          "prev_fan_speed": 30.0,
+          "prev_humidifier_mode": 0.0
+      }
+    Expected: Lower fan_speed, higher humidifier_mode (needs moisture)
+
+  ── Test Case 4: All Zero Previous States ──
+    Request:
+      {
+          "air_temp": 25.0,
+          "humidity": 60.0,
+          "soil_temp": 23.0,
+          "target_temp": 24.0,
+          "target_humidity": 65.0,
+          "prev_fan_speed": 0.0,
+          "prev_humidifier_mode": 0.0
+      }
+    Expected: Initial prediction from cold start
+
+
+================================================================================
+  10. DEPENDENCIES & REQUIREMENTS
+================================================================================
+
+  Server-side Python packages (from requirements.txt):
+    - pandas       : Data manipulation
+    - numpy        : Numerical operations
+    - scikit-learn : ML models and preprocessing
+    - joblib       : Model serialization/deserialization
+    - matplotlib   : Visualization (training only)
+    - flask        : REST API web framework
+
+  Mobile App Requirements:
+    - HTTP client library (e.g., http package in Flutter, OkHttp in Android)
+    - JSON parsing library
+    - Network permission enabled
+    - Same WiFi network as the server (for local deployment)
+
+
+================================================================================
+  11. QUICK REFERENCE CARD
+================================================================================
+
+  ┌──────────────────────────────────────────────────────────────────┐
+  │  GREENHOUSE CLIMATE CONTROL API - QUICK REFERENCE               │
+  ├──────────────────────────────────────────────────────────────────┤
+  │                                                                  │
+  │  Base URL:  http://<SERVER_IP>:5000                              │
+  │                                                                  │
+  │  GET  /          → API info                                      │
+  │  GET  /health    → { status, models_loaded }                     │
+  │  POST /predict   → { fan_speed, humidifier_mode }                │
+  │                                                                  │
+  │  POST /predict requires 7 fields:                                │
+  │    air_temp, humidity, soil_temp,                                │
+  │    target_temp, target_humidity,                                 │
+  │    prev_fan_speed, prev_humidifier_mode                          │
+  │                                                                  │
+  │  Humidifier Modes:                                               │
+  │    0=Off  |  1=Low  |  2=Medium  |  3=High                      │
+  │                                                                  │
+  │  Fan Speed Range: 0.0 - 100.0                                   │
+  │                                                                  │
+  └──────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+  END OF API DOCUMENTATION
+================================================================================
+
