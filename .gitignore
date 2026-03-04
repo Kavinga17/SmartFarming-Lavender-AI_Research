@@ -1,7 +1,4 @@
-*.pt
 Dataset/
 runs/
 labelImg-master/
 __pycache__/
-best.pt
-My_Model.pt
