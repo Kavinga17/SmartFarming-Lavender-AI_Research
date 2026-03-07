@@ -11,17 +11,17 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 
 
-def create_humidifier_model(n_estimators: int = 100, max_depth: int = None,
-                            min_samples_split: int = 2, min_samples_leaf: int = 1,
+def create_humidifier_model(n_estimators: int = 200, max_depth: int = 10,
+                            min_samples_split: int = 2, min_samples_leaf: int = 2,
                             random_state: int = 42) -> RandomForestClassifier:
     """
     Create a RandomForestClassifier model for humidifier mode prediction.
 
     Args:
-        n_estimators: Number of trees in the forest (default: 100).
-        max_depth: Maximum depth of the trees (default: None).
+        n_estimators: Number of trees in the forest (default: 200).
+        max_depth: Maximum depth of the trees (default: 10).
         min_samples_split: Minimum samples required to split a node (default: 2).
-        min_samples_leaf: Minimum samples required at a leaf node (default: 1).
+        min_samples_leaf: Minimum samples required at a leaf node (default: 2).
         random_state: Random seed for reproducibility (default: 42).
 
     Returns:
@@ -32,6 +32,7 @@ def create_humidifier_model(n_estimators: int = 100, max_depth: int = None,
         max_depth=max_depth,
         min_samples_split=min_samples_split,
         min_samples_leaf=min_samples_leaf,
+        class_weight='balanced',
         random_state=random_state,
         n_jobs=-1  # Use all available cores
     )
@@ -53,6 +54,7 @@ def train_humidifier_model(model: RandomForestClassifier, X_train: np.ndarray,
     """
     print("Training humidifier mode model...")
     model.fit(X_train, y_train)
+    print(f"Humidifier model trained on classes: {model.classes_}")
     print("Humidifier mode model training completed!")
     return model
 
@@ -134,6 +136,16 @@ if __name__ == "__main__":
     df = load_dataset(dataset_path)
     df = drop_timestamp(df)
     X, y_fan, y_humid = get_features_and_labels(df)
+
+    # Dataset integrity check - ensure all 4 humidifier classes are present
+    unique_classes = y_humid.nunique()
+    if unique_classes < 4:
+        raise ValueError(
+            f"Dataset only has {unique_classes} humidifier class(es). "
+            f"Expected 4 (Off/Low/Medium/High). "
+            f"Regenerate the dataset using the stratified humidity method before training."
+        )
+    print(f"humidifier_mode distribution:\n{y_humid.value_counts().sort_index()}")
 
     # Preprocess data
     processed_data = preprocess_pipeline(

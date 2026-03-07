@@ -1,0 +1,59 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# ===== Virtual Environments =====
+venv/
+env/
+.env/
+.venv/
+
+# ===== IDE / Editor =====
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ===== YOLO Model Weights =====
+*.pt
+*.pth
+*.onnx
+*.engine
+*.torchscript
+
+# ===== YOLO Training / Prediction Runs =====
+runs/
+
+# ===== Dataset =====
+Dataset/Images/
+Dataset/*.cache
+
+# ===== Labeling Tool (cloned repo) =====
+labelImg-master/
+
+# ===== Test Images =====
+Test*.jpg
+Test*.png
+
+# ===== OS Files =====
+Thumbs.db
+Desktop.ini
+.DS_Store
+._*
+
+# ===== Jupyter Notebook =====
+.ipynb_checkpoints/
+
+# ===== Logs =====
+*.log
