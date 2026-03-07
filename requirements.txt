@@ -1,0 +1,23 @@
+# Smart Farming Unified API - Requirements
+# Combines IT22894588 (Climate Control) + IT22304506 (Disease Detection)
+
+# Web Framework
+flask>=2.3.0
+flask-cors>=4.0.0
+
+# Machine Learning - Climate Control
+joblib>=1.3.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+
+# Computer Vision & Deep Learning - Disease/Insect Detection
+ultralytics>=8.0.0
+opencv-python>=4.8.0
+
+# Image Processing
+Pillow>=10.0.0
+numpy>=1.24.0
+
+# HTTP Requests
+requests>=2.31.0
+
