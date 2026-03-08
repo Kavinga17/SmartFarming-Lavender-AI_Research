@@ -3,6 +3,7 @@ Unified Flask API Server for Smart Farming System
 Combines:
 - IT22894588: Climate Control System (Fan & Humidifier)
 - IT22304506: Disease Detection (Lavender Disease + Insect Detection)
+- IT22341440: Soil Detection (Expert diagnosis + Yellow meter)
 - ESP32-CAM: MJPEG stream (port 81) + UDP LED/buzzer control (port 82)
 
 All services run on a single port (5000)
@@ -25,6 +26,7 @@ from ultralytics import YOLO
 from PIL import Image
 from io import BytesIO
 import requests as http_requests  # renamed to avoid conflict with flask.request
+import tensorflow as tf
 
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -126,6 +128,23 @@ latest_detections = {
     'total_detections': 0
 }
 
+# ════════════════════════════════════════════════════════════════════════════════
+#  SOIL DETECTION CONFIGURATION (IT22341440)
+#
+#  Two TensorFlow/Keras models:
+#    - my_lavender_expert.h5  → 3-class: healthy / nutrient_deficient / diseased
+#    - yellow_meter.h5        → yellowness severity when nutrient_deficient
+# ════════════════════════════════════════════════════════════════════════════════
+
+SOIL_PYTHON_DIR = os.path.join(os.path.dirname(__file__), 'IT22341440_SoilDetection', 'python')
+EXPERT_MODEL_PATH = os.path.join(SOIL_PYTHON_DIR, 'my_lavender_expert.h5')
+YELLOW_MODEL_PATH = os.path.join(SOIL_PYTHON_DIR, 'yellow_meter.h5')
+
+EXPERT_CLASSES = ['healthy', 'nutrient_deficient', 'diseased']
+
+soil_expert_model = None
+soil_yellow_model = None
+
 
 # ════════════════════════════════════════════════════════════════════════════════
 #  INITIALIZATION FUNCTIONS
@@ -182,6 +201,33 @@ def load_insect_model():
     insect_model = YOLO(INSECT_MODEL_PATH)
     print("✅ Insect Detection model loaded successfully!")
     return True
+
+
+def load_soil_models():
+    """Load soil detection TensorFlow models (expert + yellow meter)"""
+    global soil_expert_model, soil_yellow_model
+    print("🪴 Loading Soil Detection models...")
+
+    expert_ok = False
+    yellow_ok = False
+
+    if os.path.exists(EXPERT_MODEL_PATH):
+        soil_expert_model = tf.keras.models.load_model(EXPERT_MODEL_PATH)
+        print(f"   ✅ Expert model loaded: {EXPERT_MODEL_PATH}")
+        expert_ok = True
+    else:
+        print(f"   ⚠️  Expert model not found: {EXPERT_MODEL_PATH}")
+
+    if os.path.exists(YELLOW_MODEL_PATH):
+        soil_yellow_model = tf.keras.models.load_model(YELLOW_MODEL_PATH)
+        print(f"   ✅ Yellow meter model loaded: {YELLOW_MODEL_PATH}")
+        yellow_ok = True
+    else:
+        print(f"   ⚠️  Yellow meter model not found: {YELLOW_MODEL_PATH}")
+
+    if expert_ok:
+        print("✅ Soil Detection models loaded successfully!")
+    return expert_ok
 
 
 def initialize_led_controller():
@@ -528,6 +574,52 @@ def image_to_base64(image) -> str:
 
 
 # ════════════════════════════════════════════════════════════════════════════════
+#  SOIL DETECTION HELPER FUNCTIONS (IT22341440)
+# ════════════════════════════════════════════════════════════════════════════════
+
+def soil_preprocess_image(image: Image.Image) -> np.ndarray:
+    """
+    Preprocess a PIL Image for the soil TensorFlow models.
+    Resize to 224×224, strip alpha channel, normalise to [0, 1].
+    """
+    img = image.resize((224, 224))
+    img_array = np.array(img)
+
+    # Drop alpha channel if present (RGBA → RGB)
+    if len(img_array.shape) == 3 and img_array.shape[2] == 4:
+        img_array = img_array[:, :, :3]
+
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array = img_array / 255.0
+    return img_array
+
+
+def run_expert_prediction(img_array: np.ndarray) -> dict:
+    """Run the 3-class expert model (healthy / nutrient_deficient / diseased)."""
+    pred = soil_expert_model.predict(img_array, verbose=0)[0]
+    result_class = EXPERT_CLASSES[int(np.argmax(pred))]
+    return {
+        'prediction': result_class,
+        'confidence': float(np.max(pred)),
+        'probabilities': {
+            EXPERT_CLASSES[i]: float(pred[i]) for i in range(len(EXPERT_CLASSES))
+        }
+    }
+
+
+def run_yellow_prediction(img_array: np.ndarray) -> dict:
+    """Run the yellow meter model — returns yellowness % and severity."""
+    pred = soil_yellow_model.predict(img_array, verbose=0)[0]
+    yellowness = float(pred[1] * 100)
+    return {
+        'yellowness': round(yellowness, 1),
+        'green_confidence': float(pred[0]),
+        'yellow_confidence': float(pred[1]),
+        'severity': 'mild' if yellowness < 30 else 'moderate' if yellowness < 60 else 'severe'
+    }
+
+
+# ════════════════════════════════════════════════════════════════════════════════
 #  MAIN ENDPOINTS
 # ════════════════════════════════════════════════════════════════════════════════
 
@@ -535,11 +627,12 @@ def image_to_base64(image) -> str:
 def index():
     return jsonify({
         'service': 'Smart Farming Unified API',
-        'version': '1.1.0',
+        'version': '1.2.0',
         'modules': {
             'climate_control': 'IT22894588 - Fan & Humidifier Control',
             'disease_detection': 'IT22304506 - Lavender Disease Detection',
-            'insect_detection': 'IT22304506 - Insect Detection with ESP32-CAM'
+            'insect_detection': 'IT22304506 - Insect Detection with ESP32-CAM',
+            'soil_detection': 'IT22341440 - Soil Health Analysis (Expert + Yellow Meter)'
         },
         'esp32_cam': {
             'ip': ESP32_IP,
@@ -568,6 +661,11 @@ def index():
             'POST /insect/led/test': 'Test LED round-trip with Arduino ack',
             'POST /insect/config': 'Update confidence / target_class / esp32_ip',
             'POST /insect/snapshot': 'Return current frame as base64 snapshot',
+            # Soil Detection
+            'POST /soil/analyze': 'Full soil analysis (expert + yellow if needed)',
+            'POST /soil/expert': 'Run expert model only (healthy/nutrient_deficient/diseased)',
+            'POST /soil/yellow': 'Run yellow meter model only (yellowness %)',
+            # Health
             'GET  /health': 'Combined health check'
         }
     })
@@ -592,6 +690,11 @@ def health():
             'stream_url': STREAM_URL,
             'udp_port': UDP_PORT,
             'target_class': TARGET_CLASS
+        },
+        'soil_detection': {
+            'expert_model_loaded': soil_expert_model is not None,
+            'yellow_model_loaded': soil_yellow_model is not None,
+            'classes': EXPERT_CLASSES
         }
     })
 
@@ -968,6 +1071,127 @@ def insect_save_snapshot():
 
 
 # ════════════════════════════════════════════════════════════════════════════════
+#  SOIL DETECTION ENDPOINTS (IT22341440)
+# ════════════════════════════════════════════════════════════════════════════════
+
+def _soil_read_image_from_request():
+    """
+    Read an image from the current Flask request.
+    Supports:
+      - multipart file upload (field name 'image')
+      - JSON with 'image_base64'
+      - JSON with 'image_url'
+    Returns a PIL Image (RGB) or raises ValueError.
+    """
+    # 1. File upload
+    if 'image' in request.files:
+        file = request.files['image']
+        return Image.open(file.stream).convert('RGB')
+
+    # 2. JSON body
+    data = request.get_json(silent=True)
+    if data:
+        if 'image_base64' in data:
+            img_bytes = base64.b64decode(data['image_base64'])
+            return Image.open(BytesIO(img_bytes)).convert('RGB')
+        if 'image_url' in data:
+            resp = http_requests.get(data['image_url'], timeout=10)
+            return Image.open(BytesIO(resp.content)).convert('RGB')
+
+    raise ValueError('Provide an image via file upload (field "image"), '
+                     'JSON "image_base64", or JSON "image_url"')
+
+
+@app.route('/soil/analyze', methods=['POST'])
+def soil_analyze():
+    """
+    Full soil analysis endpoint.
+    Step 1: Run expert model → healthy / nutrient_deficient / diseased
+    Step 2: If nutrient_deficient → also run yellow meter for severity
+    Accepts: multipart file 'image', JSON 'image_base64', or JSON 'image_url'
+    """
+    try:
+        if soil_expert_model is None:
+            return jsonify({'error': 'Soil expert model not loaded'}), 503
+
+        pil_img = _soil_read_image_from_request()
+        img_array = soil_preprocess_image(pil_img)
+
+        expert_result = run_expert_prediction(img_array)
+        yellow_result = None
+
+        # If nutrient_deficient and yellow model is available, run yellow meter
+        if expert_result['prediction'] == 'nutrient_deficient' and soil_yellow_model is not None:
+            yellow_result = run_yellow_prediction(img_array)
+
+        return jsonify({
+            'success': True,
+            'threeClass': expert_result,
+            'yellowMeter': yellow_result,
+            'timestamp': datetime.now(UTC).isoformat()
+        })
+
+    except ValueError as ve:
+        return jsonify({'error': str(ve)}), 400
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Soil analysis failed: {str(e)}'}), 500
+
+
+@app.route('/soil/expert', methods=['POST'])
+def soil_expert():
+    """
+    Run expert model only (3-class: healthy / nutrient_deficient / diseased).
+    Accepts: multipart file 'image', JSON 'image_base64', or JSON 'image_url'
+    """
+    try:
+        if soil_expert_model is None:
+            return jsonify({'error': 'Soil expert model not loaded'}), 503
+
+        pil_img = _soil_read_image_from_request()
+        img_array = soil_preprocess_image(pil_img)
+        result = run_expert_prediction(img_array)
+
+        return jsonify({
+            'success': True,
+            **result,
+            'timestamp': datetime.now(UTC).isoformat()
+        })
+
+    except ValueError as ve:
+        return jsonify({'error': str(ve)}), 400
+    except Exception as e:
+        return jsonify({'error': f'Expert prediction failed: {str(e)}'}), 500
+
+
+@app.route('/soil/yellow', methods=['POST'])
+def soil_yellow():
+    """
+    Run yellow meter model only (yellowness %, severity).
+    Accepts: multipart file 'image', JSON 'image_base64', or JSON 'image_url'
+    """
+    try:
+        if soil_yellow_model is None:
+            return jsonify({'error': 'Yellow meter model not loaded'}), 503
+
+        pil_img = _soil_read_image_from_request()
+        img_array = soil_preprocess_image(pil_img)
+        result = run_yellow_prediction(img_array)
+
+        return jsonify({
+            'success': True,
+            **result,
+            'timestamp': datetime.now(UTC).isoformat()
+        })
+
+    except ValueError as ve:
+        return jsonify({'error': str(ve)}), 400
+    except Exception as e:
+        return jsonify({'error': f'Yellow meter prediction failed: {str(e)}'}), 500
+
+
+# ════════════════════════════════════════════════════════════════════════════════
 #  MAIN
 # ════════════════════════════════════════════════════════════════════════════════
 
@@ -981,6 +1205,7 @@ if __name__ == '__main__':
     climate_loaded = load_climate_models()
     disease_loaded = load_disease_model()
     insect_loaded = load_insect_model()
+    soil_loaded = load_soil_models()
     print("-" * 70)
 
     # Only attempt LED init when insect model loaded successfully
@@ -995,6 +1220,7 @@ if __name__ == '__main__':
     print(f"   Climate Control  : {'✅ Ready' if climate_loaded else '❌ Not Available'}")
     print(f"   Disease Detection: {'✅ Ready' if disease_loaded else '❌ Not Available'}")
     print(f"   Insect Detection : {'✅ Ready' if insect_loaded else '❌ Not Available'}")
+    print(f"   Soil Detection   : {'✅ Ready' if soil_loaded else '❌ Not Available'}")
     print(f"   ESP32-CAM LED    : {'✅ Ready' if led_ready else '⚠️  Not Connected (stream still works)'}")
     print(f"   ESP32 IP         : {ESP32_IP}")
     print(f"   Stream URL       : {STREAM_URL}")
