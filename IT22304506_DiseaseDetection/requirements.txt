@@ -1,0 +1,18 @@
+# IT22304506_DiseaseDetection Project Dependencies
+# Lavender Disease Detection using YOLOv8
+
+# Web Framework
+flask>=2.3.0
+flask-cors>=4.0.0
+
+# Computer Vision & Deep Learning
+ultralytics>=8.0.0
+opencv-python>=4.8.0
+
+# Image Processing
+Pillow>=10.0.0
+numpy>=1.24.0
+
+# HTTP Requests
+requests>=2.31.0
+
