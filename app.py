@@ -100,7 +100,7 @@ disease_model = None
 #                       responses: "LED_ON_OK" / "LED_OFF_OK"
 # ════════════════════════════════════════════════════════════════════════════════
 
-ESP32_IP = "192.168.0.198"          # Change to match your ESP32-CAM IP
+ESP32_IP = "192.168.0.197"          # Change to match your ESP32-CAM IP
 UDP_PORT = 82                         # Must match Arduino udpPort (82)
 STREAM_PORT = 81                      # Must match Arduino streamServer port (81)
 STREAM_URL = f"http://{ESP32_IP}:{STREAM_PORT}/stream"
